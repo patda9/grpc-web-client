@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "protoc -I=./protobuf helloworld.proto --js_out=import_style=commonjs,binary:./_protobuf --grpc-web_out=import_style=typescript,mode=grpcwebtext:./_protobuf && tsc",
+    "build": "protoc -I=./protobuf helloworld.proto --js_out=import_style=commonjs,binary:./_protobuf --grpc-web_out=import_style=typescript,mode=grpcwebtext:./_protobuf && npx webpack index.ts",
     "start": "node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,9 +14,14 @@
     "@grpc/grpc-js": "^1.1.1",
     "@grpc/proto-loader": "^0.5.4",
     "dotenv": "^8.2.0",
-    "google-protobuf": "^3.12.2"
+    "google-protobuf": "^3.12.2",
+    "grpc-web": "^1.2.0"
   },
   "devDependencies": {
-    "@types/google-protobuf": "^3.7.2"
+    "@types/google-protobuf": "^3.7.2",
+    "ts-loader": "^8.0.0",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   }
 }

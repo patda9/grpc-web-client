@@ -1,12 +1,12 @@
 import {
   HelloRequest,
   HelloReply,
-  RepeatHelloRequest,
-} from "./_protobuf/helloworld_pb";
-import { GreeterClient } from "./_protobuf/HelloworldServiceClientPb";
+} from "./_protobuf/helloworld_pb.js";
+import { GreeterServiceClient } from "./_protobuf/HelloworldServiceClientPb";
 
-const clientHost = `http://${window.location.hostname}:${process.env.CLIENT_PORT}`;
-const client = new GreeterClient(clientHost);
+const clientHost = `http://${window.location.hostname}:8880`;
+console.log(clientHost);
+const client = new GreeterServiceClient(clientHost);
 
 // unary request
 const unaryRequest = new HelloRequest();
@@ -23,11 +23,10 @@ const unaryRequestCallack = (e: any, response: HelloReply) => {
 };
 
 // streaming request
-const streamRequest = new RepeatHelloRequest();
+const streamRequest = new HelloRequest();
 streamRequest.setName("Joestar");
-streamRequest.setCount(5);
 
-const stream = client.sayRepeatHello(streamRequest, {});
+const stream = client.itKeepsReplying(streamRequest, {});
 
 // send requests
 client.sayHello(unaryRequest, {}, unaryRequestCallack);
