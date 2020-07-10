@@ -1,41 +1,59 @@
 import {
-  HelloRequest,
-  HelloReply,
-} from "./_protobuf/helloworld_pb.js";
-import { GreeterServiceClient } from "./_protobuf/HelloworldServiceClientPb";
+  SequenceRequest,
+  SequenceResponse,
+  SquenceType,
+} from "./_protobuf/sequences_pb.js";
+import { SequencesServiceClient } from "./_protobuf/SequencesServiceClientPb";
 
 const clientHost = `http://${window.location.hostname}:8880`;
-console.log(clientHost);
-const client = new GreeterServiceClient(clientHost);
+
+const client = new SequencesServiceClient(clientHost);
 
 // unary request
-const unaryRequest = new HelloRequest();
-unaryRequest.setName("Jonathan");
+const requestCalculation = (termNumber: number,
+                            calculationType: SquenceType) => {
+  const unaryRequest = new SequenceRequest();
+  unaryRequest.setTermNumber(termNumber);
+  unaryRequest.setType(calculationType);
 
-const unaryRequestCallack = (e: any, response: HelloReply) => {
-  if (e) {
-    console.log(
-      `Unexpected error for sayHello: code = ${e.code}, message = "${e.message}"`
-    );
-  } else {
-    console.log(response.getMessage());
-  }
+  const unaryRequestCallback = (e: any, response: SequenceResponse) => {
+    if (e) {
+      console.log(
+        `Unexpected error for sequenceRequest: code = ${e.code}, message = "${e.message}"`
+      );
+    }
+    else {
+      console.log(response.getDataList());
+    }
+  };
+
+  client.returnCalculationResult(unaryRequest, {}, unaryRequestCallback);
 };
 
 // streaming request
-const streamRequest = new HelloRequest();
-streamRequest.setName("Joestar");
+const requestCalculationStream = (termNumber: number,
+                                  calculationType: SquenceType) => {
+  const streamRequest = new SequenceRequest();
+  streamRequest.setTermNumber(termNumber);
+  streamRequest.setType(calculationType);
 
-const stream = client.itKeepsReplying(streamRequest, {});
+  const stream = client.streamCalculationResults(streamRequest, {});
 
-// send requests
-client.sayHello(unaryRequest, {}, unaryRequestCallack);
+  // send requests
+  stream.on("data", (response: SequenceResponse) => {
+    console.log(response.getDataList());
+  });
+  stream.on("error", (e: any) => {
+    console.log(
+      `Unexpected stream error: code = ${e.code}, message = "${e.message}"`
+    );
+  });
+};
 
-stream.on("data", (response: HelloReply) => {
-  console.log(response.getMessage());
-});
-stream.on("error", (e: any) => {
-  console.log(
-    `Unexpected stream error: code = ${e.code}, message = "${e.message}"`
-  );
-});
+const requestCalculations = (termNumber: number,
+                             calculationType: SquenceType) => {
+  requestCalculation(termNumber, calculationType);
+  requestCalculationStream(termNumber, calculationType);
+}
+
+requestCalculations(20, 0);
